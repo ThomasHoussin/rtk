@@ -9,6 +9,21 @@ use anyhow::{Context, Result};
 use regex::Regex;
 use std::process::Command;
 
+/// Create a Command that works on Windows for Node.js CLI tools (yarn, pnpm, npm, npx).
+///
+/// On Windows, these tools ship as `.cmd` batch wrappers alongside POSIX shell shims.
+/// Rust's `Command::new("yarn")` may resolve the POSIX shim (which lacks shebang
+/// support on Windows) instead of `yarn.cmd`. We append `.cmd` unconditionally on
+/// Windows — if the .cmd doesn't exist, Command will fail the same as the bare name.
+/// On Unix, directly spawns the command.
+pub fn script_cmd(program: &str) -> Command {
+    if cfg!(windows) {
+        Command::new(format!("{}.cmd", program))
+    } else {
+        Command::new(program)
+    }
+}
+
 /// Tronque une chaîne à `max_len` caractères avec "..." si nécessaire.
 ///
 /// # Arguments

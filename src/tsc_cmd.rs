@@ -1,5 +1,5 @@
 use crate::tracking;
-use crate::utils::truncate;
+use crate::utils::{script_cmd, truncate};
 use anyhow::{Context, Result};
 use regex::Regex;
 use std::collections::HashMap;
@@ -9,16 +9,16 @@ pub fn run(args: &[String], verbose: u8) -> Result<()> {
     let timer = tracking::TimedExecution::start();
 
     // Try tsc directly first, fallback to npx if not found
-    let tsc_exists = Command::new("which")
-        .arg("tsc")
+    let tsc_exists = script_cmd("tsc")
+        .arg("--version")
         .output()
         .map(|o| o.status.success())
         .unwrap_or(false);
 
     let mut cmd = if tsc_exists {
-        Command::new("tsc")
+        script_cmd("tsc")
     } else {
-        let mut c = Command::new("npx");
+        let mut c = script_cmd("npx");
         c.arg("tsc");
         c
     };
@@ -60,7 +60,7 @@ pub fn run(args: &[String], verbose: u8) -> Result<()> {
 }
 
 /// Filter TypeScript compiler output - group errors by file, show every error
-fn filter_tsc_output(output: &str) -> String {
+pub(crate) fn filter_tsc_output(output: &str) -> String {
     lazy_static::lazy_static! {
         // Pattern: src/file.ts(12,5): error TS2322: Type 'string' is not assignable to type 'number'.
         static ref TSC_ERROR: Regex = Regex::new(
