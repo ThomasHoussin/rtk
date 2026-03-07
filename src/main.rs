@@ -56,6 +56,7 @@ mod utils;
 mod vitest_cmd;
 mod wc_cmd;
 mod wget_cmd;
+mod yarn_cmd;
 
 use anyhow::{Context, Result};
 use clap::error::ErrorKind;
@@ -604,6 +605,13 @@ enum Commands {
     #[command(name = "golangci-lint")]
     GolangciLint {
         /// golangci-lint arguments
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+
+    /// Yarn commands with compact output (strip boilerplate, route scripts to filters)
+    Yarn {
+        /// Yarn arguments (e.g., workspace my-app run test)
         #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
@@ -1829,6 +1837,10 @@ fn main() -> Result<()> {
 
         Commands::Rewrite { cmd } => {
             rewrite_cmd::run(&cmd)?;
+        }
+
+        Commands::Yarn { args } => {
+            yarn_cmd::run(&args, cli.verbose, cli.skip_env)?;
         }
 
         Commands::Proxy { args } => {

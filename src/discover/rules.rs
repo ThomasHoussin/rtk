@@ -50,6 +50,8 @@ pub const PATTERNS: &[&str] = &[
     r"^aws\s+",
     // PostgreSQL
     r"^psql(\s|$)",
+    // Yarn
+    r"^yarn\s+(workspace\s+|run\s+|test|lint|typecheck|build|dev|format)",
 ];
 
 pub const RULES: &[RtkRule] = &[
@@ -325,6 +327,15 @@ pub const RULES: &[RtkRule] = &[
         rewrite_prefixes: &["psql"],
         category: "Infra",
         savings_pct: 75.0,
+        subcmd_savings: &[],
+        subcmd_status: &[],
+    },
+    // Yarn
+    RtkRule {
+        rtk_cmd: "rtk yarn",
+        rewrite_prefixes: &["yarn"],
+        category: "PackageManager",
+        savings_pct: 70.0,
         subcmd_savings: &[],
         subcmd_status: &[],
     },
