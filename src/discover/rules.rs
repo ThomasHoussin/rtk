@@ -44,6 +44,8 @@ pub const PATTERNS: &[&str] = &[
     // Go tooling
     r"^go\s+(test|build|vet)",
     r"^golangci-lint(\s|$)",
+    // AWS CDK
+    r"^(npx\s+)?cdk\s+(diff|synth|deploy|destroy|bootstrap)",
     // AWS CLI
     r"^aws\s+",
     // PostgreSQL
@@ -297,6 +299,15 @@ pub const RULES: &[RtkRule] = &[
         category: "Go",
         savings_pct: 85.0,
         subcmd_savings: &[],
+        subcmd_status: &[],
+    },
+    // AWS CDK
+    RtkRule {
+        rtk_cmd: "rtk cdk",
+        rewrite_prefixes: &["npx cdk", "cdk"],
+        category: "Infra",
+        savings_pct: 75.0,
+        subcmd_savings: &[("diff", 80.0), ("synth", 80.0), ("deploy", 70.0)],
         subcmd_status: &[],
     },
     // AWS CLI

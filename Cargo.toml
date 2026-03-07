@@ -32,6 +32,7 @@ ureq = "2"
 hostname = "0.4"
 
 [dev-dependencies]
+insta = "1"
 
 [profile.release]
 opt-level = 3
